@@ -1,12 +1,11 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { toast } from 'react-toastify';
 import dateformat from 'dateformat';
 import { createBrowserHistory } from 'history';
 
 const history = createBrowserHistory();
 
-const SERVICE_URL = process.env.REACT_APP_SERVICE_URL || 'http://localhost:8080'
+const SERVICE_URL = process.env.REACT_APP_SERVICE_URL || '';
 
 function errToString(input) {
   if (input === null) return null;
@@ -63,13 +62,13 @@ function restCall(options) {
       if (response.status >= 200 && response.status < 299 && !_.get(response, 'data.error')) {
         options.onSuccess(response.data);
       } else {
-        toast.error(options.uri + ' returned ' + response.status + ", error: " + errToString(response.data));
+        //toast.error(options.uri + ' returned ' + response.status + ", error: " + errToString(response.data));
         options.onError(response.payload);
       }
     })
     .catch((error) => {
       console.error("restCall failed:", error);
-      toast.error(opName + " failed: " + errToString(error));
+      //toast.error(opName + " failed: CATCH " + errToString(error));
       options.onError(error);
     })
     .finally(() => {

@@ -1,32 +1,45 @@
 import React from 'react';
 import { Router, Route, Link, Switch } from "react-router-dom";
 import "office-ui-fabric-react/dist/css/fabric.min.css";
-
-import { Fabric, mergeStyles, Nav } from 'office-ui-fabric-react/lib/index';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
+
+import { Fabric, Nav } from 'office-ui-fabric-react/lib/index';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import logo from './logo.svg';
 import './App.css';
 
 import Base from './components/Base';
-import AppDispatcher from './actions/AppDispatcher';
 import { history } from './util/Util';
+import { ErrorBoundary } from './components/Error';
+import Stooges from './components/Stooges';
+import Fruits from './components/Fruits';
 
-const X = () => (<p>Holder</p>);
+initializeIcons();
 
+const Home = () => (<div className="layout-column">
+  <Link to="/stooges">Stooges</Link>
+  <Link to="/fruits">Fruits</Link>
+</div>);
 export default class App extends Base {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: null,
+      errorInfo: null
+    }
+  }
   render() {
+    const { error, errorInfo } = this.state;
     return (
       <Fabric className="layout-row layout-justify-center">
         <Router history={ history }>
           <ToastContainer position={toast.POSITION.TOP_RIGHT} id="toast-container" style={{ zIndex: 20000000 }}/>
           <Nav
-            onRenderGroupHeader={this.groupHeader}
-            onLinkClick={this.onLinkClick}
             linkAs={(a) => { return (<Link to={a.href}>{a.title}</Link>); }}
+            className="App-nav"
+            style={{ width: '900px'}}
             groups={[
               {
                 name: 'Home',
@@ -38,59 +51,41 @@ export default class App extends Base {
                     linkAs: (<Link to="/">Home</Link>)
                   },
                   {
-                    name: 'Larry',
-                    url: '/larry',
-                    linkAs: (<Link to="/larry">Larry</Link>)
+                    name: 'Stooges',
+                    url: '/stooges',
+                    linkAs: (<Link to="/stooges">Stooges</Link>)
                   },
                   {
-                    name: 'Moe',
-                    url: '/moe',
-                    linkAs: (<Link to="/moe">Moe</Link>)
+                    name: 'Fruits',
+                    url: '/fruits',
+                    linkAs: (<Link to="/fruits">Fruits</Link>)
                   },
-                  {
-                    name: 'Curly',
-                    url: '/curly'
-                  },
-                  {
-                    name: 'Shemp',
-                    url: '/shemp'
-                  }
                 ]
               },
             ]}
           />
-          <div className="pad10 center-pane layout-scrollable height90">
+          <div className="App-center-pane layout-scrollable">
+            <ErrorBoundary error={error} info={errorInfo} 
+            onClear={() => {this.setState({error: null, errorInfo: null})}}
+            >
             <Switch>
-              <Route path="/" exact component={X}/>
-              <Route path="/larry" component={X}/>
-              <Route path="/moe" component={X}/>
-              <Route path="/curly" component={X}/>
-              <Route path="/shemp" component={X}/>
+              <Route path="/" exact component={Home}/>
+              <Route path="/stooges" component={Stooges}/>
+              <Route path="/fruits" component={Fruits}/>
             </Switch>
+            </ErrorBoundary>
           </div>
         </Router>
       </Fabric>
     );   
   }
-  
-  renderX() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }    
+
+  componentDidCatch(err, info) {
+    console.log("App.componentDidCatch", err, info);
+    this.setState({
+      err: err,
+      errorInfo: info
+    });
+  }
+
 }

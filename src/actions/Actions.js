@@ -1,12 +1,16 @@
 import Dispatcher from './AppDispatcher.js';
-import { * } from './Constants.js';
+import { DATA_LOADED, STATUS_REPORT, LOAD_ERROR } from './Constants.js';
 
 class Actions {
-  
+
+  foo() {
+    console.log('Actions.foo()');
+  }
+
   dataLoaded(data) {
     Dispatcher.dispatch({
       actionType: DATA_LOADED,
-      secrets: data
+      data: data
     });
   }
   
@@ -27,5 +31,6 @@ class Actions {
       message: message
     });
   }
-  
 }
+
+export default new Actions();
